@@ -87,7 +87,14 @@ namespace AmandsSense.Components
                         }
 
                         SenseWorldType = SenseWorldType.Item;
-                        amandsSenseConstructor = amandsSenseConstructorGameObject.AddComponent<AmandsSenseItem>();
+                        if (SpoilerFreeSettings.UseGenericLooseLootMarker.Value)
+                        {
+                            amandsSenseConstructor = amandsSenseConstructorGameObject.AddComponent<AmandsSenseGenericItem>();
+                        }
+                        else
+                        {
+                            amandsSenseConstructor = amandsSenseConstructorGameObject.AddComponent<AmandsSenseItem>();
+                        }
                         amandsSenseConstructor.amandsSenseWorld = this;
                         amandsSenseConstructor.Construct();
                         amandsSenseConstructor.SetSense(observedLootItem);
@@ -114,7 +121,14 @@ namespace AmandsSense.Components
                                 SenseWorldType = SenseWorldType.Container;
                             }
 
-                            amandsSenseConstructor = amandsSenseConstructorGameObject.AddComponent<AmandsSenseContainer>();
+                            if (SpoilerFreeSettings.InspectContainerContents.Value)
+                            {
+                                amandsSenseConstructor = amandsSenseConstructorGameObject.AddComponent<AmandsSenseContainer>();
+                            }
+                            else
+                            {
+                                amandsSenseConstructor = amandsSenseConstructorGameObject.AddComponent<AmandsSenseBlindContainer>();
+                            }
                             amandsSenseConstructor.amandsSenseWorld = this;
                             amandsSenseConstructor.Construct();
                             amandsSenseConstructor.SetSense(lootableContainer);
