@@ -1,3 +1,4 @@
+using AmandsSense.Enums;
 using AmandsSense.Helpers;
 using Comfort.Common;
 using EFT;
@@ -25,7 +26,7 @@ namespace AmandsSense.Components
                 return;
             }
 
-            drawer = amandsSenseWorld.SenseWorldType == Enums.SenseWorldType.Drawer;
+            drawer = amandsSenseWorld.SenseWorldType == SenseWorldType.Drawer;
             color = Settings.LootableContainerColor.Value;
 
             if (AmandsSenseClass.LoadedSprites.ContainsKey("LootableContainer.png"))
