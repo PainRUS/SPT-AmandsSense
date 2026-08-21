@@ -3,7 +3,6 @@ using Comfort.Common;
 using EFT;
 using EFT.Interactive;
 using EFT.InventoryLogic;
-using EFT.UI;
 using UnityEngine;
 
 namespace AmandsSense.Components
@@ -11,7 +10,7 @@ namespace AmandsSense.Components
     /// <summary>
     /// Spoiler-free loose-loot marker. It intentionally does not classify the
     /// underlying item by category, quest state, wishlist state, rarity, flea
-    /// availability, Kappa status, or EFT background color.
+    /// availability, Kappa status, EFT background color, or item-specific sound.
     /// </summary>
     public class AmandsSenseGenericItem : AmandsSenseConstructor
     {
@@ -62,7 +61,7 @@ namespace AmandsSense.Components
             // If the user switches the global Sense mode to OnText, keep this
             // policy spoiler-free instead of exposing type/name/resource data.
             ClearOptionalText();
-            PlaySenseSound();
+            PlayGenericSenseSound();
         }
 
         public override void UpdateSense()
@@ -132,42 +131,24 @@ namespace AmandsSense.Components
             }
         }
 
-        private void PlaySenseSound()
+        private void PlayGenericSenseSound()
         {
-            if (Settings.SenseRareSound.Value && AmandsSenseClass.LoadedAudioClips.ContainsKey("SenseRare.wav"))
+            // The upstream fallback sound comes from observedLootItem.Item.ItemSound
+            // and can reveal the item category. Generic mode intentionally skips it.
+            // A user-supplied SenseRare.wav is safe here because upstream plays the
+            // same clip for every loose item whenever the option is enabled.
+            if (Settings.SenseRareSound.Value
+                && AmandsSenseClass.LoadedAudioClips.ContainsKey("SenseRare.wav")
+                && !Settings.SenseAlwaysOn.Value)
             {
-                if (!Settings.SenseAlwaysOn.Value)
-                {
-                    Singleton<BetterAudio>.Instance.PlayAtPoint(
-                        transform.position,
-                        AmandsSenseClass.LoadedAudioClips["SenseRare.wav"],
-                        Settings.AudioDistance.Value,
-                        BetterAudio.AudioSourceGroupType.Environment,
-                        Settings.AudioRolloff.Value,
-                        Settings.AudioVolume.Value,
-                        EOcclusionTest.Fast);
-                }
-
-                return;
-            }
-
-            if (!Settings.SenseAlwaysOn.Value)
-            {
-                AudioClip itemClip = Singleton<GUISounds>.Instance.GetItemClip(
-                    observedLootItem.Item.ItemSound,
-                    EInventorySoundType.pickup);
-
-                if (itemClip != null)
-                {
-                    Singleton<BetterAudio>.Instance.PlayAtPoint(
-                        transform.position,
-                        itemClip,
-                        Settings.AudioDistance.Value,
-                        BetterAudio.AudioSourceGroupType.Environment,
-                        Settings.AudioRolloff.Value,
-                        Settings.AudioVolume.Value,
-                        EOcclusionTest.Fast);
-                }
+                Singleton<BetterAudio>.Instance.PlayAtPoint(
+                    transform.position,
+                    AmandsSenseClass.LoadedAudioClips["SenseRare.wav"],
+                    Settings.AudioDistance.Value,
+                    BetterAudio.AudioSourceGroupType.Environment,
+                    Settings.AudioRolloff.Value,
+                    Settings.AudioVolume.Value,
+                    EOcclusionTest.Fast);
             }
         }
 
