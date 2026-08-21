@@ -15,6 +15,7 @@ namespace AmandsSense
         public void Start()
         {
             Settings.Init(Config, Info);
+            SpoilerFreeSettings.Init(Config);
 
             new GameStartedPatch().Enable();
             new AmandsPlayerPatch().Enable();
